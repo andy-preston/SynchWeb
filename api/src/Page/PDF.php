@@ -7,7 +7,7 @@ namespace SynchWeb\Page;
 define("_MPDF_TEMP_PATH", sys_get_temp_dir() . "/mpdf/temp/");
 define("_MPDF_TTFONTDATAPATH", sys_get_temp_dir() . "/mpdf/ttfontdata/");
 
-use mPDF;
+use Mpdf\Mpdf;
 use Slim\Slim;
 use SynchWeb\Page;
 
@@ -45,17 +45,18 @@ class PDF extends Page
             parent::__construct($app, $db, $user);
 
             // Fix for mpdf < 7.0 to ensure temp dir exists
+            // Not clear yet if this is needed for production > 7.0
             // Creating the temp folder here means we have the correct permissions
             // Using separate folders for temp and font data so mpdf does not try to delete ttfontdata
-            $mpdf_temp = sys_get_temp_dir() . "/mpdf/temp/";
-            $mpdf_fontdata = sys_get_temp_dir() . "/mpdf/ttfontdata/";
+            // $mpdf_temp = sys_get_temp_dir() . "/mpdf/temp/";
+            // $mpdf_fontdata = sys_get_temp_dir() . "/mpdf/ttfontdata/";
 
-            if (!is_dir($mpdf_temp)) {
-                mkdir($mpdf_temp, 0775, true);
-            }
-            if (!is_dir($mpdf_fontdata)) {
-                mkdir($mpdf_fontdata, 0775, true);
-            }
+            // if (!is_dir($mpdf_temp)) {
+            //     mkdir($mpdf_temp, 0775, true);
+            // }
+            // if (!is_dir($mpdf_fontdata)) {
+            //     mkdir($mpdf_fontdata, 0775, true);
+            // }
         }
         # ------------------------------------------------------------------------
         # Shipment Labels
@@ -387,20 +388,22 @@ class PDF extends Page
         
         # ------------------------------------------------------------------------
         # Render html template to PDF file
-        function _render($file, $orientation = '') {
+        function _render($file, $orientation = 'P') {
             ini_set('memory_limit', '256M');
 
             $f = 'assets/pdf/'.$file.'.php';
             
             if (!$this->has_arg('p')) {
-                if ($orientation) $orientation = '-'.$orientation;
-                
+                # Not a preview mode - generate pdf
+                $format = "A4";
                 # Enable output buffering to capture html
                 ob_start();
 
-                $mpdf = new mPDF('', 'A4'.$orientation);
+                $mpdf = new Mpdf(['tempDir' => sys_get_temp_dir(),
+                                   'format' => $format,
+                                   'orientation' => $orientation]);
                 $mpdf->WriteHTML(file_get_contents('assets/pdf/styles.css'),1);
-                
+
                 if (file_exists($f)) {
                     extract($this->vars);
                     include($f);
