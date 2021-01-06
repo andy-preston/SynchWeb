@@ -87,10 +87,8 @@
                     </li>
 
                     <li>
-                        <span>
-                            <label>Containerless?</label>
-                            <input type="checkbox" v-model="containerless" /><br />
-                        </span>
+                        <label>Containerless?</label>
+                        <span><input type="checkbox" v-model="containerless" /></span><br />
                     </li>
 
                     <li>
