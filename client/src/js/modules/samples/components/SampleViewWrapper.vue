@@ -17,7 +17,9 @@ import MarionetteView from 'app/views/marionette/marionette-wrapper.vue'
 
 import { SampleViewMap } from 'modules/samples/components/samples-map'
 import Sample from 'models/sample'
-
+// XPDF Instance extends the sample model
+// Could potentially move the Sample or Instance to a lookup in SampleMap
+import Instance from 'modules/types/xpdf/models/instance'
 
 export default {
     name: 'sample-view-wrapper',
