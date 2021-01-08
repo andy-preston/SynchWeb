@@ -11,6 +11,7 @@ import SimpleSample from 'modules/types/xpdf/samples/views/vue-simplesample.vue'
 import Protein from 'models/protein'
 
 import VeeValidate from 'veevalidate'
+import Vue from 'vue'
 
 Vue.use(VeeValidate)
 
