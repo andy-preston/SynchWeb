@@ -10,7 +10,7 @@ const ProteinViewWrapper = () => import(/* webpackChunkName: "samples" */ 'modul
 
 const SampleListWrapper = () => import(/* webpackChunkName: "samples" */ 'modules/samples/components/SampleListWrapper.vue')
 const SampleViewWrapper = () => import(/* webpackChunkName: "samples" */ 'modules/samples/components/SampleViewWrapper.vue')
-const SimpleSampleAddWrapper = () => import(/* webpackChunkName: "samples" */ 'modules/samples/components/SimpleSampleAddWrapper.vue')
+const XpdfSimpleSampleAddWrapper = () => import(/* webpackChunkName: "samples" */ 'modules/samples/components/XpdfSimpleSampleAddWrapper.vue')
 
 const CrystalListWrapper = () => import(/* webpackChunkName: "samples" */ 'modules/samples/components/CrystalListWrapper.vue')
 const CrystalViewWrapper = () => import(/* webpackChunkName: "samples" */ 'modules/samples/components/CrystalViewWrapper.vue')
@@ -211,7 +211,7 @@ const routes = [
   {
     path: '/xsamples/simple/add/:pid',
     name: 'xsamples-simple-sample-add',
-    component: SimpleSampleAddWrapper,
+    component: XpdfSimpleSampleAddWrapper,
   },
 ]
 
