@@ -10,6 +10,8 @@
 import SimpleSample from 'modules/types/xpdf/samples/views/vue-simplesample.vue'
 import Protein from 'models/protein'
 
+import EventBus from 'app/components/utils/event-bus.js'
+
 import VeeValidate from 'veevalidate'
 import Vue from 'vue'
 
@@ -52,6 +54,7 @@ export default {
         return {
             ready: false,
             model: null,
+            bc: [], // Breadcrumbs
         }
     },
     created: function() {
@@ -93,10 +96,12 @@ export default {
 
             })
         },
-        // Set Breadcrumbs 
+        // Set Breadcrumbs
+        // Because we are not passing these into a marionette wrapper, update the breadcrumbs here
         setBreadcrumbs: function() {
             this.bc = [{ title: 'Samples', url: '/xsamples' }]
             this.bc.push({ title: 'Add' })
+            EventBus.$emit('bcChange', this.bc)
         },
     }
 }
