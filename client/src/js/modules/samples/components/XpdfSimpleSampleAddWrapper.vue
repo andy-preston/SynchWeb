@@ -43,7 +43,10 @@ export default {
         'simple-sample': SimpleSample
     },
     props: {
-        'pid': Number,
+        'pid': {
+            type: Number,
+            required: true,
+        }
     },
     data: function() {
         return {

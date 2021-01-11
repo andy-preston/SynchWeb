@@ -212,6 +212,9 @@ const routes = [
     path: '/xsamples/simple/add/:pid',
     name: 'xsamples-simple-sample-add',
     component: XpdfSimpleSampleAddWrapper,
+    props: route => ({
+      pid: +route.params.pid
+    }),
   },
 ]
 
