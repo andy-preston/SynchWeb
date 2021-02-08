@@ -106,13 +106,13 @@ module.exports = (env, argv) => ({
       // Vue packages from npm (vee-validate requires promise polyfill - also npm)
       vue: 'vue/dist/vue.min',
       veevalidate: 'vee-validate/dist/vee-validate.min',
+
       // Replacement for moment.js
-      zonedTimeToUtc: 'date-fns-tz/zonedTimeToUtc',
+      luxon: 'luxon',
       formatDate: 'date-fns/format',
 
       js: path.resolve(__dirname, 'src/js'),
       css: path.resolve(__dirname, 'src/css'),
-
     },
     modules: [
       path.resolve(__dirname, 'src/js'),
