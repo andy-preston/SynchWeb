@@ -1,11 +1,11 @@
 <template>
     <section>
-        <marionette-view 
-            v-if="ready" 
-            :key="$route.fullPath" 
-            :options="options" 
-            :fetchOnLoad="true" 
-            :mview="mview" 
+        <marionette-view
+            v-if="ready"
+            :key="$route.fullPath"
+            :options="options"
+            :fetchOnLoad="true"
+            :mview="mview"
             :breadcrumbs="bc">
         </marionette-view>
     </section>
@@ -17,12 +17,12 @@ import { mapGetters } from 'vuex'
 
 import MarionetteView from 'app/views/marionette/marionette-wrapper.vue'
 
-import ImageViewer from 'modules/dc/views/imageviewer'
+import ImageViewer from 'modules/dc/views/reciprocalview'
 import DataCollection from 'models/datacollection'
 
 
 export default {
-    name: 'dc-imageviewer-wrapper',
+    name: 'dc-reciprocalview-wrapper',
     components: {
         'marionette-view': MarionetteView
     },
@@ -45,7 +45,7 @@ export default {
             }
         },
         // Combine vuex state with local computed properties
-        ...mapGetters(['currentProposal', 'currentProposalType'])
+        ...mapGetters('proposal', ['currentProposal', 'currentProposalType'])
     },
     created: function() {
         this.model = new DataCollection({ ID: this.id })
@@ -65,7 +65,7 @@ export default {
         }, (error) => {
             console.log(this.$options.name + " Error getting model " + error.msg)
             app.alert({ title: 'No such data collection', message: error.msg})
-        }).finally( () => { 
+        }).finally( () => {
             // Only render when complete
             this.$store.commit('loading', false)
             this.ready = true
@@ -75,7 +75,7 @@ export default {
     methods: {
         // This method performs a lookup via the store and sets the proposal type based on sample id
         setProposal: function() {
-            this.$store.dispatch('proposal_lookup', { field: 'DATACOLLECTIONID', value: this.id } )
+            this.$store.dispatch('proposal/proposalLookup', { field: 'DATACOLLECTIONID', value: this.id } )
                 .then((val) => {
                     console.log(this.$options.name + " Proposal Lookup OK - type = " + this.currentProposalType)
                 }, (error) => {

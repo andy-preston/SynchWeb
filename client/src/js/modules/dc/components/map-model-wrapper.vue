@@ -1,11 +1,12 @@
+<!-- Map Model Viewer - Wrapper component -->
 <template>
     <section>
-        <marionette-view 
-            v-if="ready" 
-            :key="$route.fullPath" 
-            :options="options" 
-            :fetchOnLoad="true" 
-            :mview="mview" 
+        <marionette-view
+            v-if="ready"
+            :key="$route.fullPath"
+            :options="options"
+            :fetchOnLoad="true"
+            :mview="mview"
             :breadcrumbs="bc">
         </marionette-view>
     </section>
@@ -17,17 +18,20 @@ import { mapGetters } from 'vuex'
 
 import MarionetteView from 'app/views/marionette/marionette-wrapper.vue'
 
-import ImageViewer from 'modules/dc/views/reciprocalview'
+import MapModelViewer from 'modules/dc/views/mapmodelview'
 import DataCollection from 'models/datacollection'
 
 
 export default {
-    name: 'dc-reciprocalview-wrapper',
+    name: 'dc-mapmodelview-wrapper',
     components: {
         'marionette-view': MarionetteView
     },
     props: {
         'id': Number,
+        'ty': String,
+        'dt': String,
+        'ppl': String,
     },
     data: function() {
         return {
@@ -42,16 +46,19 @@ export default {
         options: function() {
             return {
                 model: this.model,
+                ty: this.ty,
+                dt: this.dt,
+                ppl: this.ppl,
             }
         },
         // Combine vuex state with local computed properties
-        ...mapGetters(['currentProposal', 'currentProposalType'])
+        ...mapGetters('proposal', ['currentProposal', 'currentProposalType'])
     },
     created: function() {
         this.model = new DataCollection({ ID: this.id })
 
         // Set the marionette view constructor we need based on the type
-        this.mview = ImageViewer
+        this.mview = MapModelViewer
 
         // Lookup proposal from id
         this.setProposal()
@@ -59,23 +66,22 @@ export default {
         // Fetch the model then set the breadcrumbs
         this.$store.commit('loading', true)
 
-        this.getDataCollection().then( () => {
+        this.$store.dispatch('getModel', this.model).then( () => {
             // Set breadcrumbs now we have the model
             this.setBreadcrumbs()
-        }, (error) => {
-            console.log(this.$options.name + " Error getting model " + error.msg)
-            app.alert({ title: 'No such data collection', message: error.msg})
-        }).finally( () => { 
+        }, () => {
+            console.log(this.$options.name + ' Error getting model, the specified data collection doesn\'t exist')
+            app.alert({ title: 'No such data collection', message: 'The specified data collection doesn\'t exist'})
+        }).finally( () => {
             // Only render when complete
             this.$store.commit('loading', false)
             this.ready = true
         })
     },
-
     methods: {
-        // This method performs a lookup via the store and sets the proposal type based on sample id
+        // This method performs a lookup via the store and sets the proposal type based on id
         setProposal: function() {
-            this.$store.dispatch('proposal_lookup', { field: 'DATACOLLECTIONID', value: this.id } )
+            this.$store.dispatch('proposal/proposalLookup', { field: 'DATACOLLECTIONID', value: this.id } )
                 .then((val) => {
                     console.log(this.$options.name + " Proposal Lookup OK - type = " + this.currentProposalType)
                 }, (error) => {
@@ -83,23 +89,10 @@ export default {
                     app.alert({title: 'Error looking up proposal', msg: error.msg})
                 })
         },
-        getDataCollection: function() {
-            // Get the data collection model and set the breadcrumbs
-            return new Promise((resolve) => {
-                this.model.fetch({
-                    success: function(model) {
-                        resolve(true)
-                    },
-                    error: function() {
-                        resolve({msg:'The specified data collection doesn\'t exist'})
-                    },
-                })
-            })
-        },
         // Breadcrumbs are determined by the model retrieved from backend
         setBreadcrumbs: function() {
             this.bc.push({ title: this.currentProposal+'-'+this.model.get('VN'), url: '/dc/visit/'+this.currentProposal+'-'+this.model.get('VN') })
-            this.bc.push({ title: 'Image Viewer' })
+            this.bc.push({ title: 'Map/Model Viewer' })
             this.bc.push({ title: this.model.get('FILETEMPLATE') })
         }
     },

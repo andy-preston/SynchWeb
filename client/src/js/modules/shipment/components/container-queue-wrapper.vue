@@ -1,11 +1,11 @@
 <template>
     <section>
-        <marionette-view 
-            v-if="ready" 
-            :key="$route.fullPath" 
-            :options="options" 
-            :fetchOnLoad="true" 
-            :mview="mview" 
+        <marionette-view
+            v-if="ready"
+            :key="$route.fullPath"
+            :options="options"
+            :fetchOnLoad="true"
+            :mview="mview"
             :breadcrumbs="bc">
         </marionette-view>
     </section>
@@ -15,23 +15,23 @@
 /*
 * Abstract the logic to determine what view to render here
 * Router guard determines if we can still add content to the proposal
-* Then displays the addcontainer view specific to a proposal type
+* Then displays the queue container view
 */
 import MarionetteView from 'app/views/marionette/marionette-wrapper.vue'
 
-import { ContainerAddMap } from 'modules/shipment/components/container-map'
-import Dewar from 'models/dewar'
+// Expect we will need to expand this into different proposal types via a map in future...
+import QueueContainerView from 'modules/imaging/views/queuecontainer'
+import Container from 'models/container'
 
 import store from 'app/store/store'
 
 export default {
-    name: 'container-add-wrapper',
+    name: 'container-queue-wrapper',
     components: {
         'marionette-view': MarionetteView
     },
     props: {
-        'did': Number,
-        'visit': String,
+        'cid': Number,
     },
     data: function() {
         return {
@@ -47,8 +47,7 @@ export default {
     computed: {
         options: function() {
             return {
-                dewar: this.model, // Note model mapped to dewar for view
-                visit: this.visit
+                model: this.model,
             }
         },
         proposalType : function() {
@@ -56,55 +55,50 @@ export default {
         }
     },
     created: function() {
-        console.log("Container Add Created for proposal Type = " + this.proposalType)
+        console.log("Container Plan Created for proposal Type = " + this.proposalType)
 
         this.bc = [{ title: 'Shipments', url: '/shipments' }]
 
-        this.model = new Dewar({ DEWARID: this.did })
+        this.model = new Container({ CONTAINERID: this.cid })
 
-        this.getDewar().then( (val) => {
-            this.mview = ContainerAddMap[this.proposalType] ? ContainerAddMap[this.proposalType].view : ContainerAddMap['default'].view
+        this.getContainer().then( (val) => {
+            this.mview = QueueContainerView
             // Update the breadcrumbs
-            this.bc.push({ title: this.model.get('SHIPPINGNAME'), url: '/shipments/sid/'+this.model.get('SHIPPINGID') })
+            this.bc.push({ title: this.model.get('SHIPMENT'), url: '/shipments/sid/'+this.model.get('SHIPPINGID') })
             this.bc.push({ title: 'Containers' })
-            this.bc.push({ title: 'Add Container'})
+            this.bc.push({ title: this.model.get('NAME') })
+            this.bc.push({ title: 'Queue Samples' })
+
         }, (error) => {
-            console.log("Error getting dewar model " + error.msg)
-            app.alert({ title: 'No such dewar', message: error.msg})
+            console.log("Error getting model " + error.msg)
+            app.alert({ title: 'No such container', message: error.msg})
         }).finally( () => { this.ready = true }) // Only render when complete
     },
     methods: {
-        // We get the model here because the view we render depends on the container details
-        getDewar: function() {
+        // We get the model here because we are just wrapping the marionette view
+        getContainer: function() {
             // Wrap the backbone request into a promise so we can wait for the result
             return new Promise((resolve) => {
                 this.model.fetch({
                     success: function(model) {
-                        console.log("Container Add got model " + JSON.stringify(model))
-
+                        console.log("Container Queue got model " + JSON.stringify(model))
                         resolve(true)
                     },
                     // Original controller had no error condition...
                     error: function() {
                         reject({msg: 'The specified dewar could not be found'})
                     },
-                })   
+                })
 
             })
         },
     },
     beforeRouteEnter: (to, from, next) => {
       // Lookup the proposal first to make sure we can still add to it
-      store.dispatch('proposal_lookup', { field: 'DEWARID', value: to.params.did })
+      store.dispatch('proposal/proposalLookup', { field: 'CONTAINERID', value: to.params.cid })
       .then((response) => {
-        console.log("Proposal lookup response: " + JSON.stringify(response))
-          // Make sure we can still add items to this proposal
-          if (app.proposal && app.proposal.get('ACTIVE') != 1) {
-            app.message({ title: 'Proposal Not Active', message: 'This proposal is not active so new containers cannot be added'} )
-            next('/403?url='+to.fullPath)
-          } else {
-            next()
-          }
+          console.log("Proposal lookup response: " + JSON.stringify(response))
+          next()
       }, (error) => {
           console.log("Error " + error.msg)
           app.alert({title: 'No such container', msg: error.msg})
