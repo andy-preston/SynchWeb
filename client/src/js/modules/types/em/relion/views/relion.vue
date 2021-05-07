@@ -24,6 +24,7 @@
         :headers="processingJobHeaders"
         :data="processingJobs"
         actions="Actions"
+        @row-clicked="onProcessingJobSelected"
     >
         <template slot="actions" slot-scope="{ row }">
             <!-- Action to stop processing. TODO - add confirmation dialog or panel below? -->
@@ -73,6 +74,8 @@ export default {
             // GUI
             isSessionActive: false,
             isSessionArchived: false,
+            isJobStopped: false,
+
 
             // Session
             session: {},
@@ -147,11 +150,15 @@ export default {
         // allows us to clear form data after submission
         onStopProcessing: function(id) {
             // Send stop processing message if needed
-            this.$store.commit('notifications/addNotification', {title: 'Debug', message: 'Requesting stop processing JOBID - processing jobs will refresh in 5 seconds ' + id})
+            this.$store.commit('notifications/addNotification', {title: 'INFO', message: 'Requesting stop processing JOBID - processing jobs will refresh in 5 seconds ' + id, level: 'info'})
             this.onStop(id)
             // Could refresh processing jobs to catch status of cancelled job...
             let self = this
             setTimeout( function() { console.log("refreshing processing jobs"); self.getProcessingJobs(1, self.initialProcessingJobPageSize)}, 5000)
+        },
+        onProcessingJobSelected: function(row) {
+            let jobId = row['PROCESSINGJOBID']
+            this.onShowProcessingJob(jobId)
         },
         onShowProcessingJob: function(id) {
             this.processingJobId = id
@@ -162,6 +169,37 @@ export default {
             let numRecords = payload.pageSize
             this.getProcessingJobs(page, numRecords)
         },
+        onStop: function (id) {
+            let self = this;
+
+            Backbone.ajax({
+                type: 'PATCH',
+                url: app.apiurl + '/em/process/relion/job/' + id,
+                success: function (xhr) {
+                    self.isJobStopped = true;
+
+                    if ('timestamp' in xhr) {
+                        // self.sessionEvents.unshift({
+                        //     timestamp_str: formatDate.default(xhr.timestamp, 'HH:mm:ss'),
+                        //     message: 'Stop processing.'
+                        // });
+                    }
+                },
+                error: function (model, response, options) {
+                    self.showSpinner = false;
+
+                    let alertMessage = 'There was a problem stopping this job.';
+
+                    if ('message' in response.responseJSON) {
+                        alertMessage = response.responseJSON.message;
+                    }
+
+                    app.alert({message: alertMessage});
+                }
+            })
+        },
+
+
     }
 }
 </script>
