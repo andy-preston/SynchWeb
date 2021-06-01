@@ -48,6 +48,8 @@
     # MOTD
     # - Show at the top of every page on first load
     $motd = 'This is the message of the day.';
+    # one of 'success', 'error', 'info', 'warning'
+    $motd_mode = 'success';
 
     # Maintainance Mode
     # - Disables site access, showing a message
