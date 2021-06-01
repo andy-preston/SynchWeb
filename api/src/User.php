@@ -16,6 +16,7 @@ class User
 		$this->personid = 0;
 		$this->perms = array();
 		$this->groups = array();
+        $this->givenname = '';
 
 		$result = $this->db->pq("SELECT cache, personid, givenname, familyname FROM person p WHERE login=:1", array($login));
 
