@@ -1,74 +1,74 @@
 <template>
-    <section class="content">
-        <h1>Send Feedback</h1>
+  <section class="content">
+    <h1>Send Feedback</h1>
 
-        <p class="help">
-            This page is for sending feedback about the
-            ISPyB web interface to the developers, not for your beamtime!
-            Please use UAS to report feedback for your visits
-        </p>
+    <p class="help">
+      This page is for sending feedback about the
+      ISPyB web interface to the developers, not for your beamtime!
+      Please use UAS to report feedback for your visits
+    </p>
 
-        <form
-            novalidate
-            :class="{loading: isLoading}"
+    <form
+      novalidate
+      :class="{loading: isLoading}"
+    >
+      <div class="form">
+        <ul>
+          <li>
+            <label>Your Name</label>
+            <input
+              v-model="name"
+              v-validate="'required'"
+              type="text"
+              name="name"
+              :class="{ferror: errors.has('name')}"
+            >
+            <span
+              v-if="errors.has('name')"
+              class="errormesage ferror"
+            >{{ errors.first('name') }}</span>
+          </li>
+          <li>
+            <label>Your Email Address</label>
+            <input
+              v-model="email"
+              v-validate="'required|email'"
+              name="email"
+              type="email"
+              :class="{ferror: errors.has('email')}"
+            >
+            <span
+              v-if="errors.has('email')"
+              class="errormesage ferror"
+            >{{ errors.first('email') }}</span>
+          </li>
+          <li>
+            <label>Feedback</label>
+            <textarea
+              v-model="feedback"
+              v-validate="'required'"
+              name="feedback"
+              :class="{ferror: errors.has('feedback')}"
+            />
+            <span
+              v-if="errors.has('feedback')"
+              class="errormesage ferror"
+            >{{ errors.first('feedback') }}</span>
+          </li>
+        </ul>
+
+        <button
+          name="submit"
+          value="1"
+          type="submit"
+          class="button submit"
+          @click.prevent="onSubmit"
         >
-            <div class="form">
-                <ul>
-                    <li>
-                        <label>Your Name</label>
-                        <input
-                            v-model="name"
-                            v-validate="'required'"
-                            type="text"
-                            name="name"
-                            :class="{ferror: errors.has('name')}"
-                        >
-                        <span
-                            v-if="errors.has('name')"
-                            class="errormesage ferror"
-                        >{{ errors.first('name') }}</span>
-                    </li>
-                    <li>
-                        <label>Your Email Address</label>
-                        <input
-                            v-model="email"
-                            v-validate="'required|email'"
-                            name="email"
-                            type="email"
-                            :class="{ferror: errors.has('email')}"
-                        >
-                        <span
-                            v-if="errors.has('email')"
-                            class="errormesage ferror"
-                        >{{ errors.first('email') }}</span>
-                    </li>
-                    <li>
-                        <label>Feedback</label>
-                        <textarea
-                            v-model="feedback"
-                            v-validate="'required'"
-                            name="feedback"
-                            :class="{ferror: errors.has('feedback')}"
-                        ></textarea>
-                        <span
-                            v-if="errors.has('feedback')"
-                            class="errormesage ferror"
-                        >{{ errors.first('feedback') }}</span>
-                    </li>
-                </ul>
-
-                <button
-                    name="submit"
-                    value="1"
-                    type="submit"
-                    class="button submit"
-                    @click.prevent="onSubmit"
-                >
-                    Send Feedback
-                </button>
-            </div>
-        </form>
-    </section>
+          Send Feedback
+        </button>
+      </div>
+    </form>
+  </section>
 </template>
 
 <script>
