@@ -1,5 +1,4 @@
 define(['backbone'], function(Backbone) {
-    
     return Backbone.Model.extend({
         urlRoot: '/feedback',
         validation: {
@@ -14,7 +13,5 @@ define(['backbone'], function(Backbone) {
                 required: true,
             },
         },
-        
     })
-
 })

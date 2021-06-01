@@ -1,16 +1,11 @@
-import MarionetteView from 'app/views/marionette/marionette-wrapper.vue'
-
-import FeedbackView from 'modules/feedback/views/vue-feedback.js'
+// Lazy load vue components
+const FeedbackView = () => import(/* webpackChunkName: "help" */ 'modules/feedback/components/feedback-view.vue')
 
 let routes = [
 {
-  path: '/feedback',
-  component: MarionetteView,
-  name: 'legacy-feedback',
-  props: {
-      mview: FeedbackView,
-      breadcrumbs: [{title: 'Feedback'}]
-  }
+    'path': '/feedback',
+    'name': 'feedback',
+    'component': FeedbackView,
 },
 ]
 
