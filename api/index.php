@@ -49,21 +49,21 @@ $app->configureMode('development', function () use ($app) {
 
 $app->get('/options', function () use ($app) {
     global
-        $motd, $motd_mode, $authentication_type, $cas_url, $cas_sso,
+        $motd, $motd_level, $authentication_type, $cas_url, $cas_sso,
         $package_description,
         $facility_courier_countries, $facility_courier_countries_nde,
         $dhl_enable, $dhl_link, $scale_grid, $preset_proposal,
         $ap_statuses, $timezone, $valid_components;
 
-    if ($motd_mode === null) {
-        $motd_mode = 'success';
+    if ($motd_level === null) {
+        $motd_level = 'success';
     }
 
     $app->contentType('application/json');
     $app->response()->body(json_encode(array(
         'motd' => array(
-            'text' => $motd,
-            'mode' => $motd_mode,
+            'message' => $motd,
+            'level' => $motd_level,
         ),
         'authentication_type' => $authentication_type,
         'cas_url' => $cas_url,
