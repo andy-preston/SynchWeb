@@ -19,7 +19,7 @@
     -->
     <div class="tw-w-full tw-px-2 lg:tw-w-10/12 lg:tw-mx-auto">
         <navbar-menu :proposalMenu="proposalMenu" :extrasMenu="extraMenu"/>
-        <motd-display :message="motd"/>
+        <motd-display :motd="motd"/>
         <notification-persist-panel></notification-persist-panel>
         <div v-if="isLoading" ><div class="loading">&nbsp;</div></div>
 
