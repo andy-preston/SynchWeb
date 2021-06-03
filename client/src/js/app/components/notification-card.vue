@@ -4,31 +4,45 @@ It is designed to work with transient notifications and for a persistent notific
 It uses slots for title and header so it can be overridded by a parent component
 -->
 <template>
-    <div class="tw-hidden md:tw-flex tw-p-4 tw-rounded tw-justify-between tw-border-2" :class="notificationClass(notification.level)">
-        <div class="tw-flex">
-            <slot name="title">
-                <p class="tw-font-bold">{{notification.title}}</p>
-            </slot>
-            <slot name="message">
-                <p v-html="notification.message" class="tw-pl-2"></p>
-            </slot>
-        </div>
-        <div class="tw-flex">
-            <!-- Placeholder for any buttons, icons etc. -->
-            <slot name="actions"></slot> 
-        </div>
+  <context-colour-card
+    :level="notification.level"
+    class="tw-hidden md:tw-flex tw-justify-between"
+  >
+    <div class="tw-flex">
+      <slot name="title">
+        <p class="tw-font-bold">
+          {{ notification.title }}
+        </p>
+      </slot>
+      <slot name="message">
+        <!--
+            https://vuejs.org/v2/api/#v-html reccomends against using v-html
+            consider refactoring
+        -->
+        <p
+          class="tw-pl-2"
+          v-html="notification.message"
+        />
+      </slot>
     </div>
+    <div class="tw-flex">
+      <!-- Placeholder for any buttons, icons etc. -->
+      <slot name="actions" />
+    </div>
+  </context-colour-card>
 </template>
 
 <script>
+import contextColourCard from './context-colour-card.vue'
+
 export default {
-    name: 'notification-card',
-    props: {
-        'notification': Object // with level, message, title properties
+    'name': 'NotificationCard',
+    'components': {
+        contextColourCard
     },
-    filters: {
+    'filters': {
         // Simple filter to convert text to upper case
-        upper: function (value) {
+        'upper': function (value) {
             if (!value) {
                 return ''
             } else {
@@ -36,24 +50,11 @@ export default {
             }
         }
     },
-    methods: {
-        // Determine classes to set based on message level
-        notificationClass: function(level) {
-            let classes = ""
-
-            if (level === 'success') {
-                classes += 'tw-border-green-500 tw-bg-green-200'
-            } else if (level === 'info') {
-                classes += 'tw-border-blue-500 tw-bg-blue-200'
-            } else if (level === 'warning') {
-                classes += 'tw-border-yellow-500 tw-bg-yellow-200'
-            } else if (level === 'error') {
-                classes += 'tw-border-red-500 tw-bg-red-200'
-            } else {
-                classes += 'tw-border-gray-500 tw-bg-gray-200'
-            }
-            return classes
-        },
-    }
+    'props': {
+        'notification': {
+            'type': Object, // with level, message, title properties
+            'required': true,
+        }
+    },
 }
 </script>
