@@ -1,6 +1,7 @@
 <template>
   <notification-card
     v-if="!closed && motd && motd.message"
+    class="tw-mt-8"
     :notification="motd"
   >
     <i
