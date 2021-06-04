@@ -75,6 +75,7 @@
     import Vue from 'vue'
     import VeeValidate from 'veevalidate'
     // Promise is not used, but required for IE if we want to use vee-validate
+    // eslint-disable-next-line no-unused-vars
     import Promise from 'promise'
     import FeedbackModel from 'modules/feedback/models/feedback'
 
@@ -130,12 +131,14 @@
 
                 // Passing {} as first argument means send all model data
                 model.save({}, {
+                    // eslint-disable-next-line no-unused-vars
                     success: function(model, response, options) {
                         // Indicate success and reset form
                         app.message({ "message": "Feedback successfully submitted" })
                         self.isLoading = false
                         self.resetForm()
                     },
+                    // eslint-disable-next-line no-unused-vars
                     error: function(model, response, options) {
                         app.alert({ "message": "Something went wrong submitting this feedback, please try again" })
                         // If feedback failed, don't reset the form, just set loading to false
