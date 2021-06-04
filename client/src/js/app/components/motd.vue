@@ -19,19 +19,19 @@
 
 <script>
 
-import NotificationCard from "app/components/notification-card.vue"
+import NotificationCard from 'app/components/notification-card.vue'
 
 export default {
-    "name": "Motd",
-    "components": {
-        "notification-card": NotificationCard,
+    'name': 'Motd',
+    'components': {
+        'notification-card': NotificationCard,
     },
-    "props":  {
-        "motd": Object,
+    'props':  {
+        'motd': Object,
     },
-    "data": function() {
+    'data': function() {
         return {
-            "closed": false,
+            'closed': false,
         }
     },
 }
