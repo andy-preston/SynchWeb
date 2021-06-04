@@ -27,7 +27,16 @@ export default {
         'notification-card': NotificationCard,
     },
     'props':  {
-        'motd': Object,
+        'motd': {
+            'type': Object,
+            // TODO: is there any way we could use a model design-pattern
+            // to deal with common data object "classes" across components?
+            'default': { // see notification-card for details
+                'level': '',
+                'message': '',
+                'title': '',
+            },
+        },
     },
     'data': function() {
         return {
