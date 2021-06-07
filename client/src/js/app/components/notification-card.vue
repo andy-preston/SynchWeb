@@ -1,7 +1,7 @@
 <!--
 This component displays notifications - styling the border and background based on the message level
 It is designed to work with transient notifications and for a persistent notification that may contain a link
-It uses slots for title and header so it can be overridded by a parent component
+It uses slots for title and header so it can be overridden by a parent component
 -->
 <template>
   <context-colour-card
@@ -10,13 +10,16 @@ It uses slots for title and header so it can be overridded by a parent component
   >
     <div class="tw-flex">
       <slot name="title">
-        <p class="tw-font-bold">
+        <p
+          v-if="notification.title"
+          class="tw-font-bold"
+        >
           {{ notification.title }}
         </p>
       </slot>
       <slot name="message">
         <!--
-            https://vuejs.org/v2/api/#v-html reccomends against using v-html
+            https://vuejs.org/v2/api/#v-html recommends against using v-html
             consider refactoring
         -->
         <p
