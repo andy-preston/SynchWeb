@@ -1,6 +1,12 @@
 <template>
-    
-<section class="content">
+  <section class="content">
+    <stop-processing-confirmation
+      :is-active="showStopConfirmation"
+      :job-id="stopJobId"
+      @confirm="confirmedStopProcessing"
+      @cancel="cancelledStopProcessing"
+    />
+
     <h1>Relion Processing</h1>
 
     <p class="help">This page is for reviewing processing jobs from Relion.</p>
@@ -56,21 +62,25 @@ import Table from 'app/components/table.vue'
 import Pagination from 'app/components/pagination.vue'
 import EventBus from 'app/components/utils/event-bus.js'
 import JobParameters from 'modules/types/em/relion/components/job-parameters.vue'
+import StopProcessingConfirmation from '../components/stop-processing-confirmation.vue'
 
 export default {
     name: 'relion-processing-form',
-    props: {
-        session_str: String,
-    },
     components: {
         'table-component': Table,
         'pagination-component': Pagination,
         'job-parameters': JobParameters,
+        'stop-processing-confirmation': StopProcessingConfirmation,
+    },
+    props: {
+        session_str: String,
     },
     data: function () {
         return {
             showSpinner: false,
 
+            showStopConfirmation: false,
+            stopJobId: 0,
             // GUI
             isSessionActive: false,
             isSessionArchived: false,
@@ -144,11 +154,19 @@ export default {
         setBreadcrumbs: function(breadcrumbs) {
             if (breadcrumbs) EventBus.$emit('bcChange', breadcrumbs)
         },
+        onStopProcessing: function(id) {
+            this.stopJobId =  id
+            this.showStopConfirmation = true
+        },
+        cancelledStopProcessing: function () {
+            this.showStopConfirmation = false
+        },
         // With new build and (IE polyfill) we could use
         // Object.assign() to reset all data to initial state
         // Using the method below is simple alternative that
         // allows us to clear form data after submission
-        onStopProcessing: function(id) {
+        confirmedStopProcessing: function(id) {
+            this.showStopConfirmation = false
             // Send stop processing message if needed
             this.$store.commit('notifications/addNotification', {title: 'INFO', message: 'Requesting stop processing JOBID - processing jobs will refresh in 5 seconds ' + id, level: 'info'})
             this.onStop(id)
