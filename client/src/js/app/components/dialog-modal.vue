@@ -19,19 +19,19 @@
           {{ title }}
         </h1>
       </header>
-      <section class="tw-p-4">
-        <p>
-          {{ message }}
-        </p>
-      </section>
+      <div class="tw-p-4">
+        <slot name="contents" />
+      </div>
       <footer class="tw-flex tw-border-t-2">
         <button
+          v-if="confirmLabel"
           class="tw-w-1/2 tw-text-white tw-bg-gray-700 hover:tw-bg-green-500 tw-rounded tw-p-1 tw-m-2"
           @click="$emit('confirm')"
         >
           {{ confirmLabel }}
         </button>
         <button
+          v-if="cancelLabel"
           class="tw-w-1/2 tw-text-white tw-bg-gray-700 hover:tw-bg-red-500 tw-rounded tw-p-1 tw-m-2"
           @click="$emit('cancel')"
         >
@@ -44,17 +44,13 @@
 
 <script>
 export default {
-    'name': 'ModalDialog',
+    'name': 'DialogModal',
     'props': {
         'isActive': {
             'type': Boolean,
             'default': false,
         },
         'title': {
-            'type': String,
-            'required': true,
-        },
-        'message': {
             'type': String,
             'required': true,
         },
