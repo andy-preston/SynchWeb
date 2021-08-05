@@ -116,7 +116,7 @@ class EM extends Page
             'findPhaseShift' => array('isRequired' => true, 'outputType' => 'boolean'),
             'pixelSize' => array('isRequired' => true, 'minValue' => 0.02, 'maxValue' => 100, 'outputType' => 'float'),
             'eerGrouping' => array('isRequired' => false, 'minValue' => 1, 'outputType' => 'integer'),
-            'motionCorrectionBinning' => array('isRequired' => false, 'inArray' => array(1, 2), 'outputType' => 'integer'),
+            'motionCorrectionBinning' => array('isRequired' => true, 'inArray' => array(1, 2), 'outputType' => 'integer'),
             'dosePerFrame' => array('isRequired' => true, 'minValue' => 0, 'maxValue' => 10, 'outputType' => 'float'),
 
             'pipelineDo1stPass' => array('isRequired' => true, 'outputType' => 'boolean'),
