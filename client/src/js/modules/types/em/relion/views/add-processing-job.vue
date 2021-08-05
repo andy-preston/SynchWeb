@@ -62,22 +62,28 @@
                   >{{ errors.first('projectMovieRawFolder') }}</span>
                 </li>
 
-                <li>
-                    <label>Movie File Name Extension</label>
-                    <select name="projectMovieFileNameExtension"
-                            v-if="!isFormReadOnly"
-                            v-model="projectMovieFileNameExtension">
-                        <option value=".tif">.tif</option>
-                        <option value=".tiff">.tiff</option>
-                        <option value=".mrc">.mrc</option>
-                    </select>
+          <li>
+            <label>Movie File Name Extension</label>
+            <select
+              v-if="!isFormReadOnly"
+              v-model="projectMovieFileNameExtension"
+              name="projectMovieFileNameExtension"
+            >
+              <option value=".tif">.tif</option>
+              <option value=".tiff">.tiff</option>
+              <option value=".mrc">.mrc</option>
+              <option value=".eer">.eer</option>
+            </select>
 
-                    <input type="text" name="projectMovieFileNameExtension"
-                           v-if="isFormReadOnly"
-                           v-model="projectMovieFileNameExtension"
-                           v-bind:readonly="true"
-                           style="margin-bottom: 20px">
-                </li>
+            <input
+              v-if="isFormReadOnly"
+              v-model="projectMovieFileNameExtension"
+              type="text"
+              name="projectMovieFileNameExtension"
+              :readonly="true"
+              style="margin-bottom: 20px"
+            >
+          </li>
 
                 <li>
                     <label>Gain Reference File</label>
@@ -145,6 +151,25 @@
                     <span v-if="errors.has('pixelSize')"
                           class="errormessage ferror tw-h-8">{{ errors.first('pixelSize') }}</span>
                 </li>
+
+          <li v-if="projectMovieFileNameExtension == '.eer'">
+            <label>
+              EER fractionation
+              <span class="small">Number of frames to group into a fraction. Excess frames are discarded.</span>
+            </label>
+            <input
+              v-model="eerGrouping"
+              v-validate="'integer|required|min_value:1'"
+              type="text"
+              name="eerGrouping"
+              :class="[errors.has('eerGrouping') ? 'ferror' : '']"
+              :readonly="isFormReadOnly"
+            >
+            <span
+              v-if="errors.has('eerGrouping')"
+              class="errormessage ferror tw-h-8"
+            >{{ errors.first('eerGrouping') }}</span>
+          </li>
 
                 <li>
                     <label>Motion Correction Binning</label>
@@ -336,6 +361,7 @@ export default {
             sphericalAberration: null,
             findPhaseShift: null,
             pixelSize: null,
+            eerGrouping: null,
             motionCorrectionBinning: null,
             dosePerFrame: null,
 
@@ -417,6 +443,7 @@ export default {
             this.sphericalAberration = 2.7;
             this.findPhaseShift = null;
             this.pixelSize = null;
+            this.eerGrouping = 20;
             this.motionCorrectionBinning = 1;
             this.dosePerFrame = 0.5;
 
@@ -508,6 +535,7 @@ export default {
                     self.sphericalAberration = parseFloat(self.sphericalAberration);
                     self.findPhaseShift = self.findPhaseShift === true;
                     self.pixelSize = parseFloat(self.pixelSize);
+                    self.eerGrouping = parseInt(self.eerGrouping, 10);
                     self.motionCorrectionBinning = parseInt(self.motionCorrectionBinning);
                     self.dosePerFrame = parseFloat(self.dosePerFrame);
 
@@ -543,6 +571,7 @@ export default {
                         sphericalAberration: self.sphericalAberration,
                         findPhaseShift: self.findPhaseShift,
                         pixelSize: self.pixelSize,
+                        eerGrouping: self.eerGrouping,
                         motionCorrectionBinning: self.motionCorrectionBinning,
                         dosePerFrame: self.dosePerFrame,
 
