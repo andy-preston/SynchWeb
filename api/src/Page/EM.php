@@ -40,6 +40,7 @@ class EM extends Page
         'pipelineDo1stPass' => '1?', // Boolean
         'pipelineDo1stPassClassification2d' => '1?', // Boolean
         'pipelineDo1stPassClassification3d' => '1?', // Boolean
+        'useFscCriterion' => '1?', // Boolean
 
         'particleUseCryolo' => '1?', // Boolean
         'particleDiameterMin' => '\d+', // Integer
@@ -120,6 +121,7 @@ class EM extends Page
             'pipelineDo1stPass' => array('isRequired' => true, 'outputType' => 'boolean'),
             'pipelineDo1stPassClassification2d' => array('isRequired' => false, 'outputType' => 'boolean'),
             'pipelineDo1stPassClassification3d' => array('isRequired' => false, 'outputType' => 'boolean'),
+            'useFscCriterion' => array('isRequired' => false, 'outputType' => 'boolean'),
 
             'particleUseCryolo' => array('isRequired' => false, 'outputType' => 'boolean'),
             'particleDiameterMin' => array('isRequired' => false, 'minValue' => 0.02, 'maxValue' => 1024, 'outputType' => 'float'),
@@ -140,7 +142,6 @@ class EM extends Page
             $required_parameters = array(
                 'projectGainReferenceFileName'
             );
-
             $this->updateRequiredParameters($validation_rules, $required_parameters);
         }
 
@@ -159,8 +160,14 @@ class EM extends Page
                 'particleCalculateForMe',
                 'pipelineDo2ndPass'
             );
-
             $this->updateRequiredParameters($validation_rules, $required_parameters);
+
+            if ($this->has_arg('pipelineDo1stPassClassification3d') && $this->arg('pipelineDo1stPassClassification3d')) {
+                $required_parameters = array(
+                    'useFscCriterion'
+                );
+                $this->updateRequiredParameters($validation_rules, $required_parameters);
+            }
 
             // Require the following parameters if pipelineDo2ndPass is true
 
@@ -169,7 +176,6 @@ class EM extends Page
                     'pipelineDo2ndPassClassification2d',
                     'pipelineDo2ndPassClassification3d'
                 );
-
                 $this->updateRequiredParameters($validation_rules, $required_parameters);
             }
         }
@@ -219,6 +225,9 @@ class EM extends Page
         if ($valid_parameters['pipelineDo1stPass']) {
             $workflow_parameters['do_class2d'] = $valid_parameters['pipelineDo1stPassClassification2d'];
             $workflow_parameters['do_class3d'] = $valid_parameters['pipelineDo1stPassClassification3d'];
+            if ($valid_parameters['pipelineDo1stPassClassification3d']) {
+                $workflow_parameters['use_fsc_criterion'] = $valid_parameters['useFscCriterion'];
+            }
 
             $workflow_parameters['autopick_do_cryolo'] = $valid_parameters['particleUseCryolo'];
             // TODO In new validator, ensure particleDiameterMin < particleDiameterMax. (JPH)

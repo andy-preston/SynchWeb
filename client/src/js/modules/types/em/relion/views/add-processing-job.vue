@@ -194,6 +194,19 @@
                            v-bind:disabled="isFormReadOnly">
                 </li>
 
+          <li v-if="pipelineDo1stPass && pipelineDo1stPassClassification3d">
+            <label>
+              Best initial model from FSC
+              <span class="small">Select best initial 3D model at 0.5 FSC.<br>Warning: This feature is currently being tested and may be unreliable.</span>
+            </label>
+            <input
+              v-model="useFscCriterion"
+              type="checkbox"
+              name="pipelineDo1stPassClassification3d"
+              :disabled="isFormReadOnly"
+            >
+          </li>
+
                 <li class="head" v-if="pipelineDo1stPass">Particle Picking</li>
 
                 <li v-if="pipelineDo1stPass">
@@ -342,6 +355,7 @@ export default {
             pipelineDo1stPass: null,
             pipelineDo1stPassClassification2d: null,
             pipelineDo1stPassClassification3d: null,
+            useFscCriterion: null,
 
             particleUseCryolo: null,
             particleDiameterMin: null,
@@ -423,6 +437,7 @@ export default {
             this.pipelineDo1stPass = true;
             this.pipelineDo1stPassClassification2d = true;
             this.pipelineDo1stPassClassification3d = true;
+            this.useFscCriterion = false;
 
             this.particleUseCryolo = false;
             this.particleDiameterMin = null;
@@ -514,6 +529,7 @@ export default {
                     self.pipelineDo1stPass = self.pipelineDo1stPass === true;
                     self.pipelineDo1stPassClassification2d = self.pipelineDo1stPassClassification2d === true;
                     self.pipelineDo1stPassClassification3d = self.pipelineDo1stPassClassification3d === true;
+                    self.useFscCriterion = self.useFscCriterion === true;
 
                     if (self.pipelineDo1stPass) {
                         self.particleUseCryolo = self.particleUseCryolo === true;
@@ -549,6 +565,7 @@ export default {
                         pipelineDo1stPass: self.pipelineDo1stPass,
                         pipelineDo1stPassClassification2d: (self.pipelineDo1stPass ? self.pipelineDo1stPassClassification2d : false),
                         pipelineDo1stPassClassification3d: (self.pipelineDo1stPass ? self.pipelineDo1stPassClassification3d : false),
+                        useFscCriterion: (self.pipelineDo1stPass && self.pipelineDo1stPassClassification3d ? self.useFscCriterion : false),
 
                         particleUseCryolo: (self.pipelineDo1stPass ? self.particleUseCryolo : false),
                         particleDiameterMin: (self.pipelineDo1stPass ? self.particleDiameterMin : null),
