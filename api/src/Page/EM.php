@@ -34,6 +34,7 @@ class EM extends Page
         'sphericalAberration' => '\d*(\.\d+)?', // Decimal
         'findPhaseShift' => '1?', // Boolean
         'pixelSize' => '\d*(\.\d+)?', // Decimal
+        'eerGrouping' => '\d+', // Integer
         'motionCorrectionBinning' => '\d+', // Integer
         'dosePerFrame' => '\d*(\.\d+)?', // Decimal
 
@@ -106,7 +107,7 @@ class EM extends Page
         $validation_rules = array(
             'projectAcquisitionSoftware' => array('isRequired' => true, 'inArray' => array('EPU', 'SerialEM'), 'outputType' => 'string'),
             'projectMovieRawFolder' => array('isRequired' => true, 'outputType' => 'string'),
-            'projectMovieFileNameExtension' => array('isRequired' => true, 'inArray' => array('tif', 'tiff', 'mrc'), 'outputType' => 'string'),
+            'projectMovieFileNameExtension' => array('isRequired' => true, 'inArray' => array('tif', 'tiff', 'mrc', 'eer'), 'outputType' => 'string'),
             'projectGainReferenceFile' => array('isRequired' => true, 'outputType' => 'boolean'),
             'projectGainReferenceFileName' => array('isRequired' => false, 'outputType' => 'string'),
 
@@ -114,6 +115,7 @@ class EM extends Page
             'sphericalAberration' => array('isRequired' => true, 'inArray' => array(1.4, 2.0, 2.7), 'outputType' => 'float'),
             'findPhaseShift' => array('isRequired' => true, 'outputType' => 'boolean'),
             'pixelSize' => array('isRequired' => true, 'minValue' => 0.02, 'maxValue' => 100, 'outputType' => 'float'),
+            'eerGrouping' => array('isRequired' => false, 'minValue' => 1, 'outputType' => 'integer'),
             'motionCorrectionBinning' => array('isRequired' => true, 'inArray' => array(1, 2), 'outputType' => 'integer'),
             'dosePerFrame' => array('isRequired' => true, 'minValue' => 0, 'maxValue' => 10, 'outputType' => 'float'),
 
@@ -134,6 +136,15 @@ class EM extends Page
             'pipelineDo2ndPassClassification2d' => array('isRequired' => false, 'outputType' => 'boolean'),
             'pipelineDo2ndPassClassification3d' => array('isRequired' => false, 'outputType' => 'boolean'),
         );
+
+        // Require the following parameters if projectMovieFileNameExtension == "eer"
+
+        if ($this->has_arg('projectMovieFileNameExtension') && $this->arg('projectMovieFileNameExtension') == 'eer') {
+            $required_parameters = array(
+                'eerGrouping'
+            );
+            $this->updateRequiredParameters($validation_rules, $required_parameters);
+        }
 
         // Require projectGainReferenceFileName if projectGainReferenceFile is true
 
@@ -220,6 +231,10 @@ class EM extends Page
         $workflow_parameters['motioncor_doseperframe'] = $valid_parameters['dosePerFrame'];
 
         $workflow_parameters['stop_after_ctf_estimation'] = !$valid_parameters['pipelineDo1stPass'];
+
+        if ($valid_parameters['projectMovieFileNameExtension'] == 'eer') {
+            $workflow_parameters['eer_grouping'] = $valid_parameters['eerGrouping'];
+        }
 
         if ($valid_parameters['pipelineDo1stPass']) {
             $workflow_parameters['do_class2d'] = $valid_parameters['pipelineDo1stPassClassification2d'];
