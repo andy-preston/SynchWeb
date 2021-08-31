@@ -95,7 +95,6 @@ class EM extends Page
         $this->exitIfElectronMicroscopesAreNotConfigured();
         $session = $this->determineSession($this->arg('session'));
 //        $this->exitIfSessionIsNotActive($session); // TODO Temporary override to make session available for testing after session has ended (JPH)
-        $this->exitIfUnfinishedProcessingJobsExist($session);
 
         $session_path = $this->substituteSessionValuesInPath($session, $visit_directory);
 
@@ -248,6 +247,13 @@ class EM extends Page
         // This requires a DataCollection which in turn requires a DataCollectionGroup.
 
         $dataCollectionId = $this->findExistingDataCollection($session, $imageDirectory, $fileTemplate);
+
+        // Only one processing job can be run against a single data collection at a time.
+        // If the current collection is created here and now, it obviously has no jobs to check yet
+
+        if ($dataCollectionId) {
+            $this->exitIfUnfinishedProcessingJobsExist($dataCollectionId);
+        }
 
         if (!$dataCollectionId) {
             $dataCollectionId = $this->addDataCollectionForEM(
@@ -436,38 +442,31 @@ class EM extends Page
         ));
     }
 
-    private function exitIfUnfinishedProcessingJobsExist($session)
+    /**
+     * If there are currently jobs running against the given data collection,
+     * call $this->_error to exit
+     *
+     * @param integer $dataCollectionId
+     */
+    private function exitIfUnfinishedProcessingJobsExist($dataCollectionId)
     {
-        // Finds queued and running ProcessingJobs associated with session
-        // Returns null otherwise
+        $result = $this->db->pq(
+            "SELECT DC.dataCollectionId, APP.processingStatus
+            FROM DataCollection DC
+            INNER JOIN ProcessingJob PJ
+                ON PJ.dataCollectionId = DC.dataCollectionId
+            LEFT JOIN AutoProcProgram APP
+                ON APP.processingJobId = PJ.processingJobId
+            WHERE APP.processingStatus IS NULL AND DC.dataCollectionId = :1",
+            array($dataCollectionId)
+        );
 
-        if ($session['SESSIONID']) {
-            $result = $this->db->pq("
-                SELECT APP.autoProcProgramId,
-                       APP.processingStartTime,
-                       APP.processingJobId,
-                       CASE
-                           WHEN (processingStartTime IS NULL AND processingEndTime IS NULL AND processingStatus IS NULL) THEN 'queued'
-                           WHEN (processingStartTime IS NOT NULL AND processingEndTime IS NULL AND processingStatus IS NULL) THEN 'running'
-                           END AS processingStatusDescription
-                FROM AutoProcProgram APP
-                         JOIN ProcessingJob PJ ON PJ.processingJobId = APP.processingJobId
-                         JOIN DataCollection DC ON PJ.dataCollectionId = DC.dataCollectionId
-                         JOIN BLSession BLS ON DC.SESSIONID = BLS.sessionId
-                WHERE processingStatus IS NULL
-                  AND BLS.sessionId = :1", array($session['SESSIONID']));
-
-            if (count($result)) {
-                $message = 'Relion processing job already exists for this session!';
-
-                error_log($message);
-                $this->_error($message, 400);
-
-                return $result;
-            }
+        if (count($result)) {
+            $message = 'Relion processing job already exists for this data collection!';
+            error_log($message);
+            // $this->_error results in an exit
+            $this->_error($message, 400);
         }
-
-        return null;
     }
 
     private function updateRequiredParameters(array &$validation_rules, array $required_parameters)
