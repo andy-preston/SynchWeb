@@ -22,5 +22,8 @@
 	"maintenance_message": "This is the maintenance message",
 	"maintenance": false,
 
+    "_userValidation": "'alpha_dash' or 'email' are suitable options",
+    "userValidation": "alpha_dash",
+
 	"ga_ident": false
 }

@@ -38,6 +38,7 @@ const store = new Vuex.Store({
     motd: '',
     help: false, // Global help flag used to denote if we should display inline help on pages
     skipHomePage: config.skipHome || false,
+    userValidation: config.userValidation || 'alpha_dash',
     models: {}
   },
   mutations: {
@@ -215,6 +216,8 @@ const store = new Vuex.Store({
     sso_url: state => state.auth.cas_url,
     apiUrl: state => state.apiUrl,
     appUrl: state => state.appUrl,
+    skipHome: state => state.skipHomePage,
+    userValidation: state => 'required|' + state.userValidation,
   }
 })
 

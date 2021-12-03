@@ -10,17 +10,47 @@
             <form class="tw-w-full tw-mt-8">
                 <ul>
                     <li class="tw-flex-col md:tw-flex-row tw-mb-4">
-                        <label class="md:tw-w-5/12 tw-p-2 tw-text-left md:tw-text-right" for="username">Username (Fedid)</label>
-                        <validation-provider rules="required|alpha_dash" v-slot="{ errors }" name="username">
-                            <input v-bind:class="[{ferror: errors.length}, 'tw-shadow tw-border tw-rounded tw-w-64 tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight focus:tw-outline-none focus:tw-shadow-outline']" v-model="username" type="text" :name="name"/>
-                            <p v-if="errors.length" class="tw-mt-2 md:tw-ml-2 tw-px-2 tw-border-l-2 tw-border-red-500 tw-text-red-800">{{ errors[0] }}</p>
+                        <label
+                          class="md:tw-w-5/12 tw-p-2 tw-text-left md:tw-text-right"
+                          for="username"
+                        >Username (Fedid)</label>
+                        <validation-provider
+                          v-slot="{ errors }"
+                          :rules="userValidation"
+                        >
+                          <input
+                            v-model="username"
+                            :class="[{ferror: errors.length}, 'tw-shadow tw-border tw-rounded tw-w-64 tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight focus:tw-outline-none focus:tw-shadow-outline']"
+                            type="text"
+                          >
+                          <p
+                            v-if="errors.length"
+                            class="tw-mt-2 md:tw-ml-2 tw-px-2 tw-border-l-2 tw-border-red-500 tw-text-red-800"
+                          >
+                            {{ errors[0] }}
+                          </p>
                         </validation-provider>
                     </li>
                     <li class="tw-flex-col md:tw-flex-row tw-mb-4">
-                        <label class="md:tw-w-5/12 tw-p-2 tw-text-left md:tw-text-right" for="password">Password</label>
-                        <validation-provider rules="required" v-slot="{ errors }" name="password">
-                            <input v-bind:class="[{ferror: errors.length}, 'tw-shadow tw-border tw-rounded tw-w-64 tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight focus:tw-outline-none focus:tw-shadow-outline']" v-model="password" type="password" :name="name"/>
-                            <p v-if="errors.length" class="tw-mt-2 md:tw-ml-2 tw-px-2 tw-border-l-2 tw-border-red-500 tw-text-red-800">{{ errors[0] }}</p>
+                        <label
+                          class="md:tw-w-5/12 tw-p-2 tw-text-left md:tw-text-right"
+                          for="password"
+                        >Password</label>
+                        <validation-provider
+                          v-slot="{ errors }"
+                          rules="required"
+                        >
+                          <input
+                            v-model="password"
+                            :class="[{ferror: errors.length}, 'tw-shadow tw-border tw-rounded tw-w-64 tw-py-2 tw-px-3 tw-text-gray-700 tw-leading-tight focus:tw-outline-none focus:tw-shadow-outline']"
+                            type="password"
+                          >
+                          <p
+                            v-if="errors.length"
+                            class="tw-mt-2 md:tw-ml-2 tw-px-2 tw-border-l-2 tw-border-red-500 tw-text-red-800"
+                          >
+                            {{ errors[0] }}
+                          </p>
                         </validation-provider>
                     </li>
                     <li class="tw-flex-col md:tw-flex-row tw-mb-4">
@@ -31,7 +61,6 @@
                 </ul>
             </form>
         </validation-observer>
-
     </div>
 </template>
 
@@ -39,6 +68,7 @@
 import Hero from 'app/components/herotitle.vue'
 import EventBus from 'app/components/utils/event-bus.js'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
+import { mapGetters } from 'vuex'
 
 export default {
     name: 'Login',
@@ -59,15 +89,7 @@ export default {
     },
 
     computed: {
-        sso: function() {
-            return this.$store.getters.sso
-        },
-        sso_url: function() {
-            return this.$store.getters.sso_url
-        },
-        skipHome: function() {
-          return this.$store.state.skipHomePage
-        }
+        ...mapGetters(['sso', 'sso_url', 'skipHome', 'userValidation'])
     },
 
     created: function() {

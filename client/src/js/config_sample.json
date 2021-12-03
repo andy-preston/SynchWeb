@@ -28,6 +28,9 @@
 		"url": "https://datacatalogue.example.org"
     },
 
+    "_userValidation": "'alpha_dash' or 'email' are suitable options",
+    "userValidation": "alpha_dash",
+
     "site_name": "my site",
     "site_link": "https://www.mysite.com"
 }
